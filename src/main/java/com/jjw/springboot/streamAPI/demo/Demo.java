@@ -2,6 +2,7 @@ package com.jjw.springboot.streamAPI.demo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Demo {
 
@@ -40,6 +41,23 @@ public class Demo {
         }).forEach(System.out::println);
 
         //排序
+        System.out.println("==================排序");
+        lists.stream().map(Employee::getAge).sorted().forEach(System.out::println);
 
+        //定制排序
+        System.out.println("==================定制排序");
+        lists.stream().sorted((x, y) -> {
+            if (x.getAge() == y.getAge()) {
+                return x.getName().compareTo(y.getName());
+            }else {
+                return x.getAge() - y.getAge();
+            }
+        }).forEach(System.out::println);
+
+        //检查全部匹配
+        System.out.println(lists.stream().anyMatch(list -> list.getAge() == 30));
+
+        Optional<Employee> max = lists.stream().max((x, y) -> x.getAge() - y.getAge());
+        System.out.println(max.get());
     }
 }
