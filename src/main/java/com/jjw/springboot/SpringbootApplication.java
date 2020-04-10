@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableTransactionManagement
+@MapperScan(basePackages = {"com.jjw.springboot.dao"})
 public class SpringbootApplication {
 
     public static void main(String[] args) {

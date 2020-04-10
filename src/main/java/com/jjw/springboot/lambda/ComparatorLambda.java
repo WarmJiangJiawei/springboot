@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 public class ComparatorLambda {
     /**
-     *
+     *  简化匿名委托（匿名内部类）
      */
 
     public static void main(String[] args) {
