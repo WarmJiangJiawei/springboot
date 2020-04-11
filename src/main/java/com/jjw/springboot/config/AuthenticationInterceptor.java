@@ -5,13 +5,11 @@ import com.jjw.springboot.annotation.PassToken;
 import com.jjw.springboot.bean.CompanyMemberAuth;
 import com.jjw.springboot.service.CompanyMemberService;
 import com.jjw.springboot.util.JwtUtils;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
@@ -22,6 +20,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor{
 
     @Autowired
     private JwtProperties jwtProperties;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     @Autowired
     private CompanyMemberService companyMemberService;
@@ -54,6 +55,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor{
                 if (token == null) {
                     throw new RuntimeException("无token，请重新登录");
                 }
+
                 // 获取 token 中的 user id
                 Map<String, Object> infoFromToken = null;
                 try {
@@ -62,10 +64,17 @@ public class AuthenticationInterceptor implements HandlerInterceptor{
                     j.printStackTrace();
                 }
                 Integer userId = (Integer) infoFromToken.get("id");
+
                 CompanyMemberAuth companyMemberAuth = companyMemberService.getUserByMid(userId);
+
+                Object token1 = redisTemplate.opsForHash().get("token", "member:" + companyMemberAuth.getUsername() + ":" + companyMemberAuth.getMid());
+                if (!token.equals(token1)) {
+                    throw new RuntimeException("token被修改");
+                }
                 if (companyMemberAuth == null) {
                     throw new RuntimeException("用户不存在，请重新登录");
                 }
+
                 // 验证 token
                 Integer expire = (Integer) infoFromToken.get("exp");
                 if (expire < System.currentTimeMillis()/1000){
