@@ -1,11 +1,13 @@
 package com.jjw.springboot.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jjw.springboot.bean.CompanyMemberAuth;
 import com.jjw.springboot.common.CommonResult;
 import com.jjw.springboot.config.JwtProperties;
 import com.jjw.springboot.dao.CompanyMemberAuthMapper;
 import com.jjw.springboot.dao.CompanyMemberMapper;
+import com.jjw.springboot.dto.CountScore;
 import com.jjw.springboot.service.CompanyMemberService;
 import com.jjw.springboot.util.JwtUtils;
 import com.jjw.springboot.util.MD5Utils;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -72,6 +75,12 @@ public class CompanyMemberServiceImpl implements CompanyMemberService {
         QueryWrapper<CompanyMemberAuth> wrapper = new QueryWrapper<>();
         wrapper.eq("mid", userId);
         return companyMemberAuthMapper.selectOne(wrapper);
+    }
+
+    //统计积分
+    public List<CountScore> coutScore(){
+        List<CountScore> countScores = companyMemberMapper.countScore();
+        return countScores;
     }
 
     @Autowired
